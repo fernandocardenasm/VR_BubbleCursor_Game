@@ -1,0 +1,17 @@
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Assembly-CSharp.dll.mdb
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Assembly-CSharp.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/obj/Debug/Assembly-CSharp.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/obj/Debug/Assembly-CSharp.dll.mdb
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/UnityEngine.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/UnityEditor.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Mono.Cecil.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Unity.DataContract.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/fernandocardenasm/Documents/UnityProjects/Cubes Games VR/Temp/bin/Debug/Mono.Cecil.Mdb.dll

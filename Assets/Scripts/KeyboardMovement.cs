@@ -7,6 +7,7 @@ public class KeyboardMovement : MonoBehaviour
 	// Use this for initialization
 
 	public float speed;
+	public GameObject surroundSphere;
 
 	private Rigidbody bubble;
 	//private GameObject[] elementsZ1;
@@ -20,7 +21,7 @@ public class KeyboardMovement : MonoBehaviour
 	private float maxBubbleScale = 5;
 	private float minBubbleScale = 1;
 
-	//Material
+	//Materials
 	private Material primMat;
 	
 
@@ -73,6 +74,8 @@ public class KeyboardMovement : MonoBehaviour
 		AssignTouchedCube ();
 
 		AssignColorsToCubes ();
+
+		AddSurroundingTransSphere ();
 
 
 
@@ -282,6 +285,22 @@ public class KeyboardMovement : MonoBehaviour
 			}
 		}
 		return false;
+	}
+
+	void AddSurroundingTransSphere(){
+		foreach (GameObject element in elementsZ1) {
+			if (currentGrabbedCube != null) {
+				if (element == currentGrabbedCube) {
+
+					float sizeSphere = (element.transform.localScale.x) + (float)(0.3 * element.transform.localScale.x);
+
+					surroundSphere.transform.localScale = new Vector3 (sizeSphere, sizeSphere, sizeSphere);
+					surroundSphere.transform.position = new Vector3 (element.transform.position.x, element.transform.position.y, element.transform.position.z);
+				}
+			} else {
+				surroundSphere.transform.position = new Vector3 (100, 100, 100);
+			}
+		}
 	}
 		
 }
