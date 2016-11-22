@@ -50,6 +50,8 @@ public class KeyboardMovement : MonoBehaviour
 
 		elementsZ1 = new System.Collections.Generic.List<GameObject> (GameObject.FindGameObjectsWithTag ("ElementZ1"));
 
+		print (elementsZ1.Count);
+
 		primMat = GetComponent<Renderer> ().material;
 	}
 	
@@ -125,6 +127,8 @@ public class KeyboardMovement : MonoBehaviour
 		GameObject closestCubeB = null;
 		float closestDistanceA = Mathf.Infinity;
 		float closestDistanceB = Mathf.Infinity;
+		float containmentDistanceA = Mathf.Infinity;
+		float containmentDistanceB = Mathf.Infinity;
 
 		foreach (GameObject element in elementsZ1) {
 
@@ -132,32 +136,52 @@ public class KeyboardMovement : MonoBehaviour
 			var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
 			var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
 
-			float scaleDiff = Vector3.Distance (bubble.transform.position, element.transform.position);
+			float intD = Vector3.Distance (bubble.transform.position, element.transform.position);
+			float conD = Vector3.Distance (bubble.transform.position, element.transform.position) + element.transform.localScale.x;
 
-			if (closestCubeA == null) {
-				closestCubeA = element;
-				closestDistanceA = scaleDiff;
-			} else if (closestCubeB == null) {
-				closestCubeB = element;
-				closestDistanceB = scaleDiff;
-			}
-			else{
-				if (closestDistanceA > scaleDiff) {
-					if (closestDistanceA > closestDistanceB){
-						closestCubeA = element;
-						closestDistanceA = scaleDiff;
-					}
+			if (intD > 0){
+				if (closestCubeA == null) {
+					closestCubeA = element;
+					closestDistanceA = intD;
+					containmentDistanceA = conD;
+				} else if (closestCubeB == null) {
+					closestCubeB = element;
+					closestDistanceB = intD;
+					containmentDistanceB = conD;
 				}
-				else if (closestDistanceB > scaleDiff){
-					if (closestDistanceB > closestDistanceA) {
-						closestCubeB = element;
-						closestDistanceB = scaleDiff;
+				else{
+					if (closestDistanceA > intD) {
+						if (closestDistanceA > closestDistanceB){
+							closestCubeA = element;
+							closestDistanceA = intD;
+							containmentDistanceA = conD;
+						}
+					}
+					else if (closestDistanceB > intD){
+						if (closestDistanceB > closestDistanceA) {
+							closestCubeB = element;
+							closestDistanceB = intD;
+							containmentDistanceB = conD;
+						}
 					}
 				}
 			}
 		}
 
-		float min = Mathf.Min (closestDistanceA, closestDistanceB);
+		if (closestDistanceA > closestDistanceB){
+			var tempIntB = closestDistanceB;
+			var tempConB = containmentDistanceB;
+
+			closestDistanceB = closestDistanceA;
+			containmentDistanceB = containmentDistanceA;
+
+			closestDistanceA = tempIntB;
+			containmentDistanceA = tempConB;
+		}
+
+		//print ("DA: " + closestDistanceA + " DB: " + closestDistanceB);
+
+		float min = Mathf.Min (containmentDistanceA, closestDistanceB);
 
 		if (min > maxBubbleScale) {
 			bubble.transform.localScale = new Vector3 (maxBubbleScale, maxBubbleScale, maxBubbleScale);
@@ -175,7 +199,7 @@ public class KeyboardMovement : MonoBehaviour
 
 			var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
 
-			if (deltaX <= scaleDiff.x && deltaY <= scaleDiff.y && deltaZ <= scaleDiff.z) {
+			if (deltaX < scaleDiff.x && deltaY < scaleDiff.y && deltaZ < scaleDiff.z) {
 				currentTouchedCube = element;
 				cont++;
 			}
