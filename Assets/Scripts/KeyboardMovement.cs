@@ -44,9 +44,9 @@ public class KeyboardMovement : MonoBehaviour
 		//elementsZ1 = GameObject.FindGameObjectsWithTag("ElementZ1");
 		bucketZ1 = GameObject.FindGameObjectWithTag ("BucketZ1");
 		selectedCubeMove = new Vector3 ();
-		lastGrabbedCube = new GameObject ();
-		currentTouchedCube = new GameObject (); 
-		currentGrabbedCube = new GameObject ();
+		lastGrabbedCube = null;
+		currentTouchedCube = null; 
+		currentGrabbedCube = null;
 
 		elementsZ1 = new System.Collections.Generic.List<GameObject> (GameObject.FindGameObjectsWithTag ("ElementZ1"));
 
@@ -197,23 +197,25 @@ public class KeyboardMovement : MonoBehaviour
 
 	void AssignTouchedCube ()
 	{
-		int cont = 0;
-		foreach (GameObject element in elementsZ1) {
+		if(isAnyCubeTouched() && currentGrabbedCube == null){
+			int cont = 0;
+			foreach (GameObject element in elementsZ1) {
 
-			var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
-			var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
-			var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
+				var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
+				var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
+				var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
 
-			var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
+				var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
 
-			if (deltaX < scaleDiff.x && deltaY < scaleDiff.y && deltaZ < scaleDiff.z) {
-				currentTouchedCube = element;
-				cont++;
-					
+				if (deltaX < scaleDiff.x && deltaY < scaleDiff.y && deltaZ < scaleDiff.z) {
+					currentTouchedCube = element;
+					cont++;
+
+				}
 			}
-		}
-		if (cont == 0) {
-			currentTouchedCube = null;
+			if (cont == 0) {
+				currentTouchedCube = null;
+			}
 		}
 	}
 
