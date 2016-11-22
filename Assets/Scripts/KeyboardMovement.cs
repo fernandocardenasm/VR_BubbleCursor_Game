@@ -68,6 +68,8 @@ public class KeyboardMovement : MonoBehaviour
 
 		IdentifyClosestCubes ();
 
+		AssignTouchedCube ();
+
 		AssignColorsToCubes ();
 
 
@@ -162,14 +164,25 @@ public class KeyboardMovement : MonoBehaviour
 		} else {
 			bubble.transform.localScale = new Vector3 (min, min, min);
 		}
+	}
 
-		if (min == closestDistanceA) {
-			currentTouchedCube = closestCubeA;
-		} else if (min == closestDistanceB) {
-			currentTouchedCube = closestCubeB;
+	void AssignTouchedCube(){
+		int cont = 0;
+		foreach (GameObject element in elementsZ1) {
+			var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
+			var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
+			var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
+
+			var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
+
+			if (deltaX <= scaleDiff.x && deltaY <= scaleDiff.y && deltaZ <= scaleDiff.z) {
+				currentTouchedCube = element;
+				cont++;
+			}
 		}
-
-
+		if (cont == 0) {
+			currentTouchedCube = null;
+		}
 	}
 
 	void AssignColorsToCubes ()
