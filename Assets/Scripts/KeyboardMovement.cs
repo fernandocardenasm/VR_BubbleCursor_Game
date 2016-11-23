@@ -9,52 +9,52 @@ public class KeyboardMovement : MonoBehaviour
 	public float speed;
 	public GameObject surroundSphere;
 
+	private int cZ = 0; // currentZone
+	private static int maxNumZones = 2;
+
 	private Rigidbody bubble;
 	//private GameObject[] elementsZ1;
-	private System.Collections.Generic.List <GameObject> elementsZ1;
-	private GameObject bucketZ1;
+	private System.Collections.Generic.List<GameObject>[] listElementList = new System.Collections.Generic.List<GameObject>[maxNumZones];
+	private GameObject[] bucketList = new GameObject[maxNumZones];
+
+
+	//private System.Collections.Generic.List <GameObject> listElementList[cZ];
+	//private GameObject bucketList[cZ];
 	private Vector3 selectedCubeMove;
 	private GameObject lastGrabbedCube;
 	private GameObject currentTouchedCube;
 	private GameObject currentGrabbedCube;
 
 	private float maxBubbleScale = 5;
-	private float minBubbleScale = 1;
-
-	//Materials
-	private Material primMat;
 	
 
 	/*Color guide
-	 * The colors are important because thats the way, in which state is each object and then we
-	 * execute actions regarding to it.
+	 * The colors are important because thats the way, we show the different state of each sphere.
 	 *Green: The object is grabbed by the bubble
 	 *Red: The object is touched by the bubble
 	 *Clay: The object was the last object to be selected by the bubble.
 	 *Yellow: The normal color of the object without any interaction
 	*/
 
-
 	void Start ()
 	{
+
 		bubble = GetComponent<Rigidbody> ();
 		//bubble.GetComponent<Renderer> ().material.color = new Color (.04f, .16f, .35f);
 
 		print ("Scale: " + bubble.transform.localScale);
-
-		//elementsZ1 = GameObject.FindGameObjectsWithTag("ElementZ1");
-		bucketZ1 = GameObject.FindGameObjectWithTag ("BucketZ1");
 		selectedCubeMove = new Vector3 ();
 		lastGrabbedCube = null;
 		currentTouchedCube = null; 
 		currentGrabbedCube = null;
 
-		elementsZ1 = new System.Collections.Generic.List<GameObject> (GameObject.FindGameObjectsWithTag ("ElementZ1"));
-
-		print (elementsZ1.Count);
-
-		primMat = GetComponent<Renderer> ().material;
-	}
+		for (int i = 0; i < maxNumZones; i++){
+			listElementList[i] = new System.Collections.Generic.List<GameObject> (GameObject.FindGameObjectsWithTag ("ElementZ" + i)); 
+			bucketList[i] = GameObject.FindGameObjectWithTag ("BucketZ" + i);
+		}
+			
+		print (listElementList[cZ].Count);
+		}
 	
 	// Update is called once per frame
 	void Update ()
@@ -77,11 +77,12 @@ public class KeyboardMovement : MonoBehaviour
 
 		AddSurroundingTransSphere ();
 
+		UpdateZone ();
 
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
 			if (isAnyCubeTouched ()) {
-				foreach (GameObject element in elementsZ1) {
+				foreach (GameObject element in listElementList[cZ]) {
 
 					if (element == currentGrabbedCube) {
 						currentGrabbedCube = null;
@@ -136,7 +137,7 @@ public class KeyboardMovement : MonoBehaviour
 			float containmentDistanceA = Mathf.Infinity;
 			float containmentDistanceB = Mathf.Infinity;
 
-			foreach (GameObject element in elementsZ1) {
+			foreach (GameObject element in listElementList[cZ]) {
 
 				var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
 				var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
@@ -202,7 +203,7 @@ public class KeyboardMovement : MonoBehaviour
 	{
 		if(isAnyCubeTouched() && currentGrabbedCube == null){
 			int cont = 0;
-			foreach (GameObject element in elementsZ1) {
+			foreach (GameObject element in listElementList[cZ]) {
 
 				var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
 				var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
@@ -225,7 +226,7 @@ public class KeyboardMovement : MonoBehaviour
 	void AssignColorsToCubes ()
 	{
 		GameObject objectToDelete = null;
-		foreach (GameObject element in elementsZ1) {
+		foreach (GameObject element in listElementList[cZ]) {
 
 
 			if (element == currentGrabbedCube) {
@@ -247,9 +248,9 @@ public class KeyboardMovement : MonoBehaviour
 
 			if (element == lastGrabbedCube && currentGrabbedCube == null && element.transform.position.y > 1) {
 
-				var deltaX = Mathf.Abs (bucketZ1.transform.position.x - element.transform.position.x);
-				var deltaY = Mathf.Abs (bucketZ1.transform.position.y - element.transform.position.y);
-				var deltaZ = Mathf.Abs (bucketZ1.transform.position.z - element.transform.position.z);
+				var deltaX = Mathf.Abs (bucketList[cZ].transform.position.x - element.transform.position.x);
+				var deltaY = Mathf.Abs (bucketList[cZ].transform.position.y - element.transform.position.y);
+				var deltaZ = Mathf.Abs (bucketList[cZ].transform.position.z - element.transform.position.z);
 
 				var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
 
@@ -264,16 +265,16 @@ public class KeyboardMovement : MonoBehaviour
 
 		//Delete the object when the object is inside the bucket
 		if (objectToDelete != null) {
-			elementsZ1.Remove (objectToDelete);
+			listElementList[cZ].Remove (objectToDelete);
 			Destroy (objectToDelete);
 			print ("Destroyed");
-			print ("Size: " + elementsZ1.Count);
+			print ("Size: " + listElementList[cZ].Count);
 		}
 	}
 
 	bool isAnyCubeTouched ()
 	{
-		foreach (GameObject element in elementsZ1) {
+		foreach (GameObject element in listElementList[cZ]) {
 			var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
 			var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
 			var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
@@ -288,7 +289,7 @@ public class KeyboardMovement : MonoBehaviour
 	}
 
 	void AddSurroundingTransSphere(){
-		foreach (GameObject element in elementsZ1) {
+		foreach (GameObject element in listElementList[cZ]) {
 			if (currentGrabbedCube != null) {
 				if (element == currentGrabbedCube) {
 
@@ -299,6 +300,17 @@ public class KeyboardMovement : MonoBehaviour
 				}
 			} else {
 				surroundSphere.transform.position = new Vector3 (100, 100, 100);
+			}
+		}
+	}
+
+	void UpdateZone(){
+		if (listElementList [cZ].Count == 0) {
+			if (cZ + 1 == maxNumZones) {
+				print ("You won!");
+			} else {
+				cZ++;
+				print ("New Zone: " + cZ);
 			}
 		}
 	}
