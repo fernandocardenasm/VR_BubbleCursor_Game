@@ -142,10 +142,6 @@ public class KeyboardMovement : MonoBehaviour
 
 			foreach (GameObject element in listElementList[cZ]) {
 
-				var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
-				var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
-				var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
-
 				float intD = Vector3.Distance (bubble.transform.position, element.transform.position);
 				float conD = Vector3.Distance (bubble.transform.position, element.transform.position) + element.transform.localScale.x;
 
