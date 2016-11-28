@@ -26,6 +26,7 @@ public class KeyboardMovement : MonoBehaviour
 	private GameObject currentGrabbedCube;
 
 	private float maxBubbleScale = 5;
+	private bool isAnyCubeTouched;
 	
 
 	/*Color guide
@@ -54,7 +55,9 @@ public class KeyboardMovement : MonoBehaviour
 		}
 			
 		print (listElementList[cZ].Count);
-		}
+
+		isAnyCubeTouched = false;
+	}
 	
 	// Update is called once per frame
 	void Update ()
@@ -81,7 +84,7 @@ public class KeyboardMovement : MonoBehaviour
 
 
 		if (Input.GetKeyDown (KeyCode.Space)) {
-			if (isAnyCubeTouched ()) {
+			if (isAnyCubeTouched) {
 				foreach (GameObject element in listElementList[cZ]) {
 
 					if (element == currentGrabbedCube) {
@@ -201,7 +204,8 @@ public class KeyboardMovement : MonoBehaviour
 
 	void AssignTouchedCube ()
 	{
-		if(isAnyCubeTouched() && currentGrabbedCube == null){
+		/*
+		if (isAnyCubeTouched () && currentGrabbedCube == null) {
 			int cont = 0;
 			foreach (GameObject element in listElementList[cZ]) {
 
@@ -210,6 +214,13 @@ public class KeyboardMovement : MonoBehaviour
 				var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
 
 				var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
+
+				float intD = Vector3.Distance (bubble.transform.position, element.transform.position);
+
+//				if (intD <= 1) {
+//					currentTouchedCube = element;
+//					cont++;
+//				}
 
 				if (deltaX < scaleDiff.x && deltaY < scaleDiff.y && deltaZ < scaleDiff.z) {
 					currentTouchedCube = element;
@@ -220,7 +231,10 @@ public class KeyboardMovement : MonoBehaviour
 			if (cont == 0) {
 				currentTouchedCube = null;
 			}
+		} else {
+			currentTouchedCube = null;
 		}
+		*/
 	}
 
 	void AssignColorsToCubes ()
@@ -272,21 +286,31 @@ public class KeyboardMovement : MonoBehaviour
 		}
 	}
 
-	bool isAnyCubeTouched ()
+	/*bool isAnyCubeTouched ()
 	{
+			
+
 		foreach (GameObject element in listElementList[cZ]) {
 			var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
 			var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
 			var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
 
+			float intD = Vector3.Distance (bubble.transform.position, element.transform.position) - bubble.transform.localScale.x/2 - element.transform.localScale.x/2;
+
 			var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
 
-			if (deltaX <= scaleDiff.x && deltaY <= scaleDiff.y && deltaZ <= scaleDiff.z) {
+			if (intD <= 1) {
+				print ("Distance: " + intD);
 				return true;
 			}
+
+//			if (deltaX <= scaleDiff.x && deltaY <= scaleDiff.y && deltaZ <= scaleDiff.z) {
+//				return true;
+//			}
 		}
 		return false;
 	}
+	*/
 
 	void AddSurroundingTransSphere(){
 		foreach (GameObject element in listElementList[cZ]) {
@@ -314,5 +338,27 @@ public class KeyboardMovement : MonoBehaviour
 			}
 		}
 	}
-		
+
+	void OnTriggerEnter(Collider coll){
+
+
+	}
+
+	void OnTriggerExit(Collider coll){
+
+		if (currentGrabbedCube == null) {
+			isAnyCubeTouched = false;
+			currentTouchedCube = null;
+		}
+	}	
+
+	void OnTriggerStay(Collider coll){
+
+		if (currentTouchedCube == null) {
+			isAnyCubeTouched = true;
+			currentTouchedCube = coll.gameObject;
+		}
+
+		//print ("OUT");
+	}
 }
