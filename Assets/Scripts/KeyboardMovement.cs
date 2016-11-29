@@ -9,7 +9,8 @@ public class KeyboardMovement : MonoBehaviour
 	public float speed;
 	public GameObject surroundSphere;
 
-	private int cZ = 0; // currentZone
+	private int cZ = 0;
+	// currentZone
 	private static int maxNumZones = 2;
 
 	private Rigidbody bubble;
@@ -49,12 +50,12 @@ public class KeyboardMovement : MonoBehaviour
 		currentTouchedCube = null; 
 		currentGrabbedCube = null;
 
-		for (int i = 0; i < maxNumZones; i++){
-			listElementList[i] = new System.Collections.Generic.List<GameObject> (GameObject.FindGameObjectsWithTag ("ElementZ" + i)); 
-			bucketList[i] = GameObject.FindGameObjectWithTag ("BucketZ" + i);
+		for (int i = 0; i < maxNumZones; i++) {
+			listElementList [i] = new System.Collections.Generic.List<GameObject> (GameObject.FindGameObjectsWithTag ("ElementZ" + i)); 
+			bucketList [i] = GameObject.FindGameObjectWithTag ("BucketZ" + i);
 		}
 			
-		print (listElementList[cZ].Count);
+		print (listElementList [cZ].Count);
 
 		isAnyCubeTouched = false;
 	}
@@ -141,6 +142,11 @@ public class KeyboardMovement : MonoBehaviour
 			float containmentDistanceB = Mathf.Infinity;
 
 			foreach (GameObject element in listElementList[cZ]) {
+				//float centD = Vector3.Distance (bubble.transform.position, sphere.transform.position);
+
+				//rayDist1 = Vector3.Distance(hit.point, bubble.transform.position);
+				//bubble.transform.localScale = new Vector3 (hit.distance + origS, hit.distance + origS, hit.distance +origS);
+				
 
 				float intD = Vector3.Distance (bubble.transform.position, element.transform.position);
 				float conD = Vector3.Distance (bubble.transform.position, element.transform.position) + element.transform.localScale.x;
@@ -196,6 +202,7 @@ public class KeyboardMovement : MonoBehaviour
 				bubble.transform.localScale = new Vector3 (min, min, min);
 			}
 		}
+
 	}
 
 	void AssignTouchedCube ()
@@ -258,9 +265,9 @@ public class KeyboardMovement : MonoBehaviour
 
 			if (element == lastGrabbedCube && currentGrabbedCube == null && element.transform.position.y > 1) {
 
-				var deltaX = Mathf.Abs (bucketList[cZ].transform.position.x - element.transform.position.x);
-				var deltaY = Mathf.Abs (bucketList[cZ].transform.position.y - element.transform.position.y);
-				var deltaZ = Mathf.Abs (bucketList[cZ].transform.position.z - element.transform.position.z);
+				var deltaX = Mathf.Abs (bucketList [cZ].transform.position.x - element.transform.position.x);
+				var deltaY = Mathf.Abs (bucketList [cZ].transform.position.y - element.transform.position.y);
+				var deltaZ = Mathf.Abs (bucketList [cZ].transform.position.z - element.transform.position.z);
 
 				var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
 
@@ -275,10 +282,10 @@ public class KeyboardMovement : MonoBehaviour
 
 		//Delete the object when the object is inside the bucket
 		if (objectToDelete != null) {
-			listElementList[cZ].Remove (objectToDelete);
+			listElementList [cZ].Remove (objectToDelete);
 			Destroy (objectToDelete);
 			print ("Destroyed");
-			print ("Size: " + listElementList[cZ].Count);
+			print ("Size: " + listElementList [cZ].Count);
 		}
 	}
 
@@ -308,7 +315,8 @@ public class KeyboardMovement : MonoBehaviour
 	}
 	*/
 
-	void AddSurroundingTransSphere(){
+	void AddSurroundingTransSphere ()
+	{
 		foreach (GameObject element in listElementList[cZ]) {
 			if (currentGrabbedCube != null) {
 				if (element == currentGrabbedCube) {
@@ -324,7 +332,8 @@ public class KeyboardMovement : MonoBehaviour
 		}
 	}
 
-	void UpdateZone(){
+	void UpdateZone ()
+	{
 		if (listElementList [cZ].Count == 0) {
 			if (cZ + 1 == maxNumZones) {
 				print ("You won!");
@@ -335,20 +344,23 @@ public class KeyboardMovement : MonoBehaviour
 		}
 	}
 
-	void OnTriggerEnter(Collider coll){
+	void OnTriggerEnter (Collider coll)
+	{
 
 
 	}
 
-	void OnTriggerExit(Collider coll){
+	void OnTriggerExit (Collider coll)
+	{
 
 		if (currentGrabbedCube == null) {
 			isAnyCubeTouched = false;
 			currentTouchedCube = null;
 		}
-	}	
+	}
 
-	void OnTriggerStay(Collider coll){
+	void OnTriggerStay (Collider coll)
+	{
 
 		if (currentTouchedCube == null) {
 			isAnyCubeTouched = true;
