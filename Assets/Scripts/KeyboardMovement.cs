@@ -63,41 +63,38 @@ public class KeyboardMovement : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		/*float moveHorizontal = Input.GetAxis ("Horizontal");
-		float moveVertical = Input.GetAxis ("Vertical");
+		
+		if (cZ == maxNumZones) {
 
-		Vector3 movement = new Vector3 (moveHorizontal, 0.0f, moveVertical);
+			print ("Game Done!");
 
-		rb.AddForce (movement * speed);
-		*/
+		} else {
+			MovementPlayer ();
 
-		MovementPlayer ();
+			IdentifyClosestCubes ();
 
-		IdentifyClosestCubes ();
+			AssignColorsToCubes ();
 
-		AssignTouchedCube ();
+			AddSurroundingTransSphere ();
 
-		AssignColorsToCubes ();
-
-		AddSurroundingTransSphere ();
-
-		UpdateZone ();
+			UpdateZone ();
 
 
-		if (Input.GetKeyDown (KeyCode.Space)) {
-			if (isAnyCubeTouched) {
-				foreach (GameObject element in listElementList[cZ]) {
+			if (Input.GetKeyDown (KeyCode.Space)) {
+				if (isAnyCubeTouched) {
+					foreach (GameObject element in listElementList[cZ]) {
 
-					if (element == currentGrabbedCube) {
-						currentGrabbedCube = null;
-						lastGrabbedCube = element;
-					} else if (element == currentTouchedCube) {
-						currentGrabbedCube = element;
-						currentTouchedCube = null;
-						lastGrabbedCube = element;
+						if (element == currentGrabbedCube) {
+							currentGrabbedCube = null;
+							lastGrabbedCube = element;
+						} else if (element == currentTouchedCube) {
+							currentGrabbedCube = element;
+							currentTouchedCube = null;
+							lastGrabbedCube = element;
+						}
 					}
-				}
-			} 
+				} 
+			}
 		}
 	}
 
@@ -135,109 +132,50 @@ public class KeyboardMovement : MonoBehaviour
 		if (currentGrabbedCube == null) {
 
 			GameObject closestCubeA = null;
-			GameObject closestCubeB = null;
-			float closestDistanceA = Mathf.Infinity;
 			float closestDistanceB = Mathf.Infinity;
 			float containmentDistanceA = Mathf.Infinity;
-			float containmentDistanceB = Mathf.Infinity;
 
-			foreach (GameObject element in listElementList[cZ]) {
-				//float centD = Vector3.Distance (bubble.transform.position, sphere.transform.position);
+			float minDisA = Mathf.Infinity;
+			float minDisB = Mathf.Infinity;
 
-				//rayDist1 = Vector3.Distance(hit.point, bubble.transform.position);
-				//bubble.transform.localScale = new Vector3 (hit.distance + origS, hit.distance + origS, hit.distance +origS);
-				
+			if (listElementList [cZ].Count == 1) {
+				bubble.transform.localScale = new Vector3 (maxBubbleScale, maxBubbleScale, maxBubbleScale);
+			} else if (listElementList[cZ].Count > 1) {
+				foreach (GameObject element in listElementList[cZ]) {
+					float dis = Vector3.Distance (bubble.transform.position, element.transform.position);
+					float conD = 2 * dis + element.transform.localScale.x;
 
-				float intD = Vector3.Distance (bubble.transform.position, element.transform.position);
-				float conD = Vector3.Distance (bubble.transform.position, element.transform.position) + element.transform.localScale.x;
-
-				if (intD > 0) {
-					if (closestCubeA == null) {
-						closestCubeA = element;
-						closestDistanceA = intD;
+					if (dis < minDisA) {
+						minDisA = dis;
 						containmentDistanceA = conD;
-					} else if (closestCubeB == null) {
-						closestCubeB = element;
-						closestDistanceB = intD;
-						containmentDistanceB = conD;
-					} else {
-						if (closestDistanceA > intD) {
-							if (closestDistanceA > closestDistanceB) {
-								closestCubeA = element;
-								closestDistanceA = intD;
-								containmentDistanceA = conD;
-							}
-						} else if (closestDistanceB > intD) {
-							if (closestDistanceB > closestDistanceA) {
-								closestCubeB = element;
-								closestDistanceB = intD;
-								containmentDistanceB = conD;
-							}
+						closestCubeA = element;
+					}
+				}
+
+				foreach (GameObject element in listElementList[cZ]) {
+					float dis = Vector3.Distance (bubble.transform.position, element.transform.position);
+					float intD = 2 * dis - element.transform.localScale.x - 0.1f;
+
+					if (element != closestCubeA) {
+						if (dis < minDisB) {
+							minDisB = dis;
+							closestDistanceB = intD;
 						}
 					}
 				}
-			}
+					
+				float min = Mathf.Min (containmentDistanceA, closestDistanceB);
 
-			if (closestDistanceA > closestDistanceB) {
-				var tempElementB = closestCubeB; 
-				var tempIntB = closestDistanceB;
-				var tempConB = containmentDistanceB;
-
-				closestDistanceB = closestDistanceA;
-				containmentDistanceB = containmentDistanceA;
-				closestCubeB = closestCubeA;
-
-				closestCubeA = tempElementB;
-				closestDistanceA = tempIntB;
-				containmentDistanceA = tempConB;
-			}
-
-			//print ("DA: " + closestDistanceA + " DB: " + closestDistanceB);
-
-			float min = Mathf.Min (containmentDistanceA, closestDistanceB);
-
-			if (min > maxBubbleScale) {
-				bubble.transform.localScale = new Vector3 (maxBubbleScale, maxBubbleScale, maxBubbleScale);
-			} else {
-				bubble.transform.localScale = new Vector3 (min, min, min);
-			}
-		}
-
-	}
-
-	void AssignTouchedCube ()
-	{
-		/*
-		if (isAnyCubeTouched () && currentGrabbedCube == null) {
-			int cont = 0;
-			foreach (GameObject element in listElementList[cZ]) {
-
-				var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
-				var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
-				var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
-
-				var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
-
-				float intD = Vector3.Distance (bubble.transform.position, element.transform.position);
-
-//				if (intD <= 1) {
-//					currentTouchedCube = element;
-//					cont++;
-//				}
-
-				if (deltaX < scaleDiff.x && deltaY < scaleDiff.y && deltaZ < scaleDiff.z) {
-					currentTouchedCube = element;
-					cont++;
+				if (min > maxBubbleScale) {
+					bubble.transform.localScale = new Vector3 (maxBubbleScale, maxBubbleScale, maxBubbleScale);
+				} else {
+					bubble.transform.localScale = new Vector3 (min, min, min);
 
 				}
 			}
-			if (cont == 0) {
-				currentTouchedCube = null;
-			}
-		} else {
-			currentTouchedCube = null;
+				
 		}
-		*/
+
 	}
 
 	void AssignColorsToCubes ()
@@ -260,8 +198,6 @@ public class KeyboardMovement : MonoBehaviour
 				}
 					
 			}
-			//var distance = Vector3.Distance(bubble.transform.position, element.transform.position);
-			//print ("position: " + element.name + " Distance: " + distance);
 
 			if (element == lastGrabbedCube && currentGrabbedCube == null && element.transform.position.y > 1) {
 
@@ -288,33 +224,7 @@ public class KeyboardMovement : MonoBehaviour
 			print ("Size: " + listElementList [cZ].Count);
 		}
 	}
-
-	/*bool isAnyCubeTouched ()
-	{
-			
-
-		foreach (GameObject element in listElementList[cZ]) {
-			var deltaX = Mathf.Abs (bubble.transform.position.x - element.transform.position.x);
-			var deltaY = Mathf.Abs (bubble.transform.position.y - element.transform.position.y);
-			var deltaZ = Mathf.Abs (bubble.transform.position.z - element.transform.position.z);
-
-			float intD = Vector3.Distance (bubble.transform.position, element.transform.position) - bubble.transform.localScale.x/2 - element.transform.localScale.x/2;
-
-			var scaleDiff = (bubble.transform.localScale + element.transform.localScale) / 2;
-
-			if (intD <= 1) {
-				print ("Distance: " + intD);
-				return true;
-			}
-
-//			if (deltaX <= scaleDiff.x && deltaY <= scaleDiff.y && deltaZ <= scaleDiff.z) {
-//				return true;
-//			}
-		}
-		return false;
-	}
-	*/
-
+		
 	void AddSurroundingTransSphere ()
 	{
 		foreach (GameObject element in listElementList[cZ]) {
@@ -344,12 +254,6 @@ public class KeyboardMovement : MonoBehaviour
 		}
 	}
 
-	void OnTriggerEnter (Collider coll)
-	{
-
-
-	}
-
 	void OnTriggerExit (Collider coll)
 	{
 
@@ -366,7 +270,5 @@ public class KeyboardMovement : MonoBehaviour
 			isAnyCubeTouched = true;
 			currentTouchedCube = coll.gameObject;
 		}
-
-		//print ("OUT");
 	}
 }
